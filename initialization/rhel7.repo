@@ -1,0 +1,11 @@
+[rhel7]
+name=file:rhel7
+baseurl=file:///var/ftp/rhel7/
+enabled=1
+gpgcheck=0
+
+[ansible]
+name=ansible
+baseurl=file:///var/ftp/ansible_soft/
+enabled=1
+gpgcheck=0

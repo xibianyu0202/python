@@ -1,0 +1,5 @@
+[NSD1807]
+name=CentOS1708
+baseurl="ftp://192.168.4.254/system"
+enabled=1
+gpgcheck=1

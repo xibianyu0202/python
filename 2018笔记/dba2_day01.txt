@@ -1,0 +1,312 @@
+  /fullabk 完全备份文件存储目录
+]# ls  /new1dir 第1次增量文件存储目录
+]# ls  /new2dir 第2次增量文件存储目录
+
+增量恢复：
+准备恢复数据 --apply-log 
+合并日志 --redo-only
+拷贝数据 --copy-back
+指定增量恢复数据的目录名 --incremental-dir
+
+1、删除数据
+]#systemctl  stop mysqld
+]#rm -rf /var/lib/mysql
+]#mkdir  /var/lib/mysql
+]#ls /var/lib/mysql
+
+2 增量恢复数据
+]# innobackupex --apply-log --redo-only /fullabk 
+]#cat /fullabk/xtrabackup_checkpoints 查看恢复信息
+
+]#innobackupex --apply-log --redo-only /fullabk 
+--incremental-dir=/new1dir
+]#cat /fullabk/xtrabackup_checkpoints  
+
+]#innobackupex --apply-log --redo-only /fullabk 
+--incremental-dir=/new2dir
+]#cat /fullabk/xtrabackup_checkpoints 
+3 拷贝备份文件到数据库目录下
+]# innobackupex --copy-back /fullabk/
+[root@client50 ~]# rm  -rf /new1dir/
+[root@client50 ~]# rm  -rf /new2dir/
+4 修改所有者和组为mysql
+]#ls /var/lib/mysql
+]#chown  -R mysql:mysql /var/lib/mysql
+]#systemctl  start mysqld
+]#mysql -uroot -p123456
+mysql> select  * from db5.a; 查看恢复的数据
+mysql> insert into  db5.a values(2121);继续存储新数据 （写多条）
+备份新产生的数据
+]# innobackupex --user root --password 123456 
+--incremental /dir  --incremental-basedir=/fullabk 
+--no-timestamp
+]# cat /dir/xtrabackup_checkpoints  查看备份信息
+
+
+++++++++恢复完全备份中的某个表++++++++
+
+在db5库下创建第2张表并写入记录
+mysql> create table db5.b(id int);
+mysql> insert into db5.b values(119); 插入多条
+
+
+对db5 做完全备份 
+]# innobackupex --user root  --password 123456 
+--databases="db5" /db5bak  --no-timestamp
+
+
+查看备份信息  ]# ls /db5bak/
+
+++++++++++++++++单独恢复a表的步骤++++++++++
+删除db5库的a表
+mysql> drop  table db5.a;
+
+使用到命令和选项
+--export 导出表信息
+删除表空间  mysql> alter  table 库名.表 discard  tablespace;  
+导入表空间  mysql> alter  table 库名.表  import  tablespace; 
+
+
+1 手动创建a表且表结构要与删除时的结构相同。
+create table  db5.a(id int);
+
+2 删除a表的表空间文件
+mysql> alter table db5.a discard  tablespace;
+
+3 导出表信息，并拷贝到数据库目录下
+]# innobackupex --user root --password 123456 
+--databases="db5" --apply-log  --export /db5bak
+
+]# cp /db5bak/db5/a.{cfg,exp,ibd} /var/lib/mysql/db5/
+]# ls /var/lib/mysql/db5/a.*
+]# chown mysql:mysql /var/lib/mysql/db5/a.*
+
+4 导入表信息  并删除表信息文件
+mysql> alter  table db5.a  import  tablespace;
+
+mysql> system rm -rf /var/lib/mysql/db5/a.cfg
+mysql> system rm -rf /var/lib/mysql/db5/a.exp
+
+5 查看表记录
+mysql> select  * from db5.a;
+
+
+
+++++++++++++++++++++++++++++
+DBA2_进阶_day01 部署mysql主从同步结构
+客户端 
+client50
+
+数据库服务器
+mysql51  
+mysql52  
+mysql53    
++++++++++++++++++++++++++++++
+mysql主从同步介绍
+++++++++++++++++++++++++
+mysql主从同步结构模式
+一主一从
+一主多从
+主从从
+主主结构（互为主从）
+
+++++++++++++++++++++++++++++++
+mysql主从同步工作原理（理论）
+从库 从主机上同步数据数据的工作过程。
+
+++++++++++++++++++++++++++
+三、mysql主从同步配置步骤：
+3.1 配置主库：启用binlog日志  用户授权  查看当前正在使用的binlog日志
+
+3.2 配置从库：
+指定server_id   指定主库信息  
+启动slave程序  查看 slave程序的状态信息
+
+++++++++++配置MySQL 一主一从 同步结构++++++++++++++++++++
+
+主库 192.168.4.51
+]#vim /etc/my.cnf
+[mysqld]
+server_id=51
+log-bin=mysql51
+binlog_format="mixed"
+:wq
+
+]# systemctl restart mysqld
+
+]# ls /var/lib/mysql/mysql51.*
+
+mysql> grant replication slave on *.* to
+    -> repluser@"%"
+    -> identified by "123qqq...A";
+
+mysql> select host,user from mysql.user where user="repluser";
+
+mysql> show master status;
+
+
+从库 192.168.4.52
+]# vim /etc/my.cnf
+[mysqld]
+server_id=52
+:wq
+
+]# systemctl restart mysqld
+
+]# mysql -uroot -p123qqq...A
+mysql> change master to
+    -> master_host="192.168.4.51",
+    -> master_user="repluser",
+    -> master_password="123qqq...A",
+    -> master_log_file="mysql51.000001",
+    -> master_log_pos=441;
+
+mysql> start slave;
+mysql> show slave status\G;
+            Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+
+]# 
+测试主从同步配置：在客户端50主机连接主机51 对数据做访问。
+1 在主库51上添加授权用户给客户端50主机连接使用
+mysql> create database db1;
+mysql> create table db1.a(id int);
+mysql> grant select,insert,update on db1.*  to admin@"%" 
+    -> identified by "123qqq...A";
+
+2 在客户端50主机连接主库服务器51 对记录做访问
+]# mysql -h192.168.4.51 -uadmin -p123qqq...A
+mysql> select @@hostname;
+mysql> insert into db1.a values(111),(1112),(113);
+mysql> select  * from  db1.a;
+
+3 在从库服务器52本机也能查看到同样数据 为成功
+]#mysql -uroot -p123qqq...A
+mysql> select  * from  db1.a;
+
+++++++++配置一主多从 同步结构++++++++++++++++
+把数据库服务器53 也配置为51的从数据库服务器
+
+主库主机51 :已经是主数据库服务器了,无需再做配置
+
+配置从库53 :
+与主库数据一致（把主库数据的完全备份文件拷贝到本机执行恢复）
+51: ]# mysqldump  -uroot -p123qqq...A  db1  > /root/db1.sql
+51: ]# scp  /root/db1.sql  192.168.4.53:/root/
+
+53:
+mysql> create database db1;
+mysql> use db1;
+mysql> source  /root/db1.sql;
+mysql> select * from db1.a;
+
+指定server_id 
+]#vim /etc/my.cnf
+[mysqld]
+server_id=53
+:wq
+]# systemctl  restart mysqld
+ 
+指定主库信息
+]#mysql  -h192.168.4.51  -urepluser  -p123qqq...A
+mysql> quit;
+
+]# mysql -uroot  -p123qqq...A
+mysql> change master to 
+    -> master_host="192.168.4.51",
+    -> master_user="repluser",
+    -> master_password="123qqq...A",
+    -> master_log_file="mysql51.000001",
+    -> master_log_pos=2133;
+Query OK, 0 rows affected, 2 warnings (0.42 sec)
+  
+启动slave程序 
+mysql> start slave;
+Query OK, 0 rows affected (0.02 sec)
+ 
+查看 slave程序的状态信息
+show slave status\G;
+            Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+
+测试： 客户端50 连接主机51 写入的数据在
+从库52 和 53 本机也能查看到数据 配置就成功了
+
+client50 ~]# mysql -h192.168.4.51 -uadmin -p123qqq...A
+mysql> insert into db1.a values(66066);
+mysql> insert into db1.a values(66066);
+mysql> insert into db1.a values(66066);
+
+52 mysql> select  * from  db1.a;
+53 mysql> select  * from  db1.a;
+
+
+
+配置从库暂时不同步主机数据：停止从库的slave程序即可
+
+把从库还原为独立的数据服务器：让53主机不做51的从库了
+
+53：
+[root@mysql53 ~]# systemctl  stop mysqld
+[root@mysql53 ~]# rm -rf /var/lib/mysql/master.info 
+[root@mysql53 ~]# rm -rf /var/lib/mysql/mysql53-relay-bin.*
+[root@mysql53 ~]# rm -rf /var/lib/mysql/relay-log.info 
+
+[root@mysql53 ~]# vim /etc/my.cnf
+[mysqld]
+#server_id=53
+:wq
+[root@mysql53 ~]# systemctl  start mysqld
+
+[root@mysql53 ~]# mysql -uroot -p123qqq...A 
+mysql> show slave status\G ; 看不到主库信息了
+
+
+
+
+++++++++++++配置 mysql主从从 同步结构++++++++++++++
+
+配置主库 51： 启用binlog日志 用户授权 查看日志信息
+
+
+配置从库 52：
+主配置文件里：要启用log_slave_updates配置
+做主库的配置：启用binlog日志 用户授权 查看日志信息
+vim /etc/my.cnf
+[mysqld]
+log_slave_updates
+server_id=52
+log-bin=slave52
+binlog_format="mixed"
+:wq
+]# systemctl restart mysqld
+]#  mysql -uroot -p123qqq...A
+mysql> grant replication slave on  *.*  to repluser2@"%"
+identified by "123qqq...A";
+mysql> show master status;
+mysql> show slave status\G;
+做从库的配置：指定server_id  指定定主库信息 
+              启动slave程序  查看slave程序状态信息
+
+把主机53配置为52的从库服务器：
+在没有配置为从库之前要与主库数据一致，指定server_id  指定定主库信息 
+启动slave程序  查看slave程序状态信息
+]# vim /etc/my.cnf
+[mysqld]
+server_id=53
+:wq
+]# systemctl restart mysqld
+]# mysql -h192.168.4.52 -urepluser2 -p123qqq...A
+mysql> quit
+]# mysql  -uroot  -p123qqq...A
+mysql> change master to master_host="201c192.168.4.52",
+master_user="repluser2",master_password="123qqq...A",
+master_log_file="slave52.000001",master_log_pos=442;
+mysql> start slave;
+mysql> show slave status\G;
+            Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+
+在客户端主机50 上连接主机51 写入的数据，在52和53本机都可以查看到，
+即为配置成功
+

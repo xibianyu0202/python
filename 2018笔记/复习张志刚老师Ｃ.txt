@@ -1,0 +1,115 @@
+网卡命名
+ifconfig
+en表示以太网
+wl无线局域网
+ww无线广域网
+第三个字母可以反映出网关的类别，
+o表示在主板上集成的网卡，
+p表示位置，s表示插槽slot
+
+rhel7网卡名命名
+/etc/sysconfig/grub
+在"GRUB_CMDLINE_LINUX" 变量中添加一句
+"net.ifnames=0  biosdevname=0"
+
+＃　grub2-mkconfig -o /boot/grub2/grub.cfg
+
+AS4: netconf AS4: Advanced Server 高级服务器
+RHEL5/6 
+
+
+5主机名rhel7之前的版本
+/etc/sysconfig/network
+
+grep [选项]　
+６. 查找 /etc/passwd 
+
+grep -n  'adm' /etc/passwd
+
+# grep -B2 -A3 -n 'adm' /etc/passwd
+# grep -B2 -A3 -n 'adm' /etc/passwd
+
+# egrep -v '^#|^ *$' /etc/postfix/main.cf
+
+标准文件
+标准输入：　键盘：文件描述符０
+标准输入：　终端：文件描述符１
+标准输入：　终端：文件描述符２
+
+
+输入重定向
+# tr 'a-z' 'A-Z'
+
+# tr 'a-z' 'A-Z' < .bashrc
+
+
+# tr 'a-z' 'A-Z' << EOF                          
+> SDFAS
+> Ssdfas
+> sdf
+> asdf
+> EOF
+
+
+yum配置文件
+#!/bin/bash
+cat <<EOF > /root/girl.repo
+[rhel7]
+name=rhel7
+baseurl=ftp://192.168.8.254/rhel7
+enabled=1
+gpgcheck=0
+EOF
+
+
+~-上次的工作目录
+
+# cat myfile 
+/etc/hosts
+/etc/passwd
+
+# cat ~/.bashrc | tr 'a-z' 'A-Z'
+
+# cat myfile  | xargs ls -l
+
+查找
+# find /boot/ -size +5M -exec cp {} /opt/ \;
+
+３天内改动过的文件
+# find -mtime -3
+
+
+*/5 8-18 * * 1,3,5 每周一三五从早上８点到晚上８点
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

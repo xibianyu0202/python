@@ -1,0 +1,79 @@
+
+XSHELL
+yum -y install lrzsz
+1.时间服务
+cat /etc/ntp.conf 
+server ntp.myhuaweicloud.com iburst
+
+yum -y remove ntp
+rm -f /etc/ntp.conf.rpmsave
+
+# chronyc sources -v
+
+# yum -y install 
+lftp 
+psmisc 
+vim 
+chrony 
+bash-completion
+
+
+# pstree -p
+rpm -qa | grep firewall
+ss -ltun
+
+
+数据库192.168.0.65
+
+
+139.159.248.23
+139.159.196.253
+
+
+容器技术己经成为应用程序封装和交付的核心技术
+容器技术的核心有以下几个内核技术组成：
+Cgroup (Control Group) 资源管理
+NameSpace 进程隔离
+SELinux 安全
+由于是在物理机上实施隔离，启动一个容，可以像启动一个进程一样迅速
+
+Docker 是完整的一套容器管理系统
+Docker提供了一组命令，让用户更加方便直接使用容器技术，而不需要过多关心底层技术
+Docker优点
+相比于传统的虚拟化技术，容器更加简洁高效
+传统虚拟机需要给每个VM安装操作系统
+容器使用的共享公共库和程序
+
+Kubernetess
+
+区块链是一种安全和隐私解决方案
+
+区块链提供了分布式的在线数据库，加密交易数据由多方共享，从而为加密货币交易提供完整的审计跟踪。该技术还被用于制造供应链中解决假冒伪劣品的问题，并加强银行金融交易服务。
+
+kill　命令向进程发送信号
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

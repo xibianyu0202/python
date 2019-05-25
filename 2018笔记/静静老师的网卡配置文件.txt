@@ -1,0 +1,6 @@
+TYPE=Ethernet
+PROXY_METHOD=none
+NAME=eth1
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=192.168.2.51

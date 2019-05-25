@@ -1,0 +1,170 @@
+GFS是一个可扩展的分布式文 件系统。用于大型的、分布式的、对大量数据 进行访问的应用。它运行于廉价的普通硬件上，提供容错功能。
+
+Mapreduce是针对分布式并行计算的一套编程模型。
+
+Mapreduce 是由Map和reduce组成，Map是影射，把指令分发到多个worker上去，reduce是规约，把Map的worker计算出来的结果合并。
+
+NameNode
+—Master节点，管理HDFS的名称空间和数据 块映射信息，配置副本 策略，处理所有客户端请求。
+Secondayr NameNode
+
+
+./bin/hadoop --help
+
+# ./bin/hadoop jar  share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar  wordcount oo xx
+
+
+
+# vim /etc/ssh/ssh_config
+Host *
+        GSSAPIAuthentication yes
+   StrictHostKeyChecking no
+
+https://hadoop.apache.org/docs/r2.7.6/ s
+
+htfs://namenode
+
+
+# vim hdfs-site.xml
+<configuration>
+    <property>
+      <name>dfs.namenode.http-address</name>
+      <value>nn01:50070</value>
+    </property>
+    <property>
+      <name>dfs.namenode.secondary.http-address</name>
+      <value>nn01:50090</value>
+    </property>
+    <property>
+      <name>dfs.replication</name>
+      <value>2</value>
+    </property>
+</configuration>
+
+# vim core-site.xml
+<configuration>
+    <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://nn01:9000</value>
+    </property>
+    <property>
+      <name>hadoop.tmp.dir</name>
+      <value>/var/hadoop</value>
+    </property>
+</configuration>
+
+
+
+
+
+
+# rsync -aSH --delete /usr/local/hadoop/ node3:/usr/local/ &
+同步
+
+
+namenode -format
+
+# ./bin/hdfs namenode -format   
+./sbin/start-dfs.sh
+
+验证角色 [所有机器]
+
+NameNode 存的是文件名,不太耗内存， 不太耗网络的IO，不太耗磁盘。
+
+ApplicationMaster
+数据切分
+为应用程序申请资源，并分配给内部任务
+
+who -b
+
+# locale
+
+[root@pc02 etc]# readlink localtime
+
+
+./bin/hdfs dfsadmin -report
+
+
+# diff -y --suppress-common-lines ifcfg-eth0 ifcfg-eth1
+
+比较两个文件
+
+# vimdiff ifcfg-eth0 ifcfg-eth1
+qa!
+
+
+
+# ./bin/yarn node -list
+
+# ./bin/hadoop fs -mkdir /abc
+
+将一个文件从物理机存入hdfs
+
+put 
+get
+
+http://192.168.8.11:50070/   可以查看相关文件
+
+
+上传	
+# ./bin/hadoop fs -put *.txt /abc
+
+下载
+# /usr/local/hadoop/bin/hadoop fs -get /abc/*.txt
+
+
+# ./bin/hadoop fs -ls hdfs://nn01:9000/
+完整写法
+cat etc/hadoop/core-site.xml
+hdfs://nn01:9000
+因为配置文件中己经写好
+
+
+# ./bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.6.jar wordcount /abc  /output`
+
+
+# ./bin/hdfs dfsadmin -setBalancerBandwidth 60000000
+inotify 适合微量小量数据同步
+是内核的一个事件，是内核实现的。
+
+DRBD ＋ heartbeat
+
+HDFS
+CEPH
+
+
+id 200
+groupadd -g 200 nfsuser
+useradd -u200 -g  200 -r nfsuser
+id nfsuser
+
+# chown 200.200 /var/nfstmp/
+# setfacl -m user:nfsuser:rwx /usr/local/hadoop/logs/
+
+su -l nfsuser
+
+
+]# mount -t nfs -o vers=3,proto=tcp,nolock,no★ --虚拟机--★ .168.8.16:/  /mnt/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

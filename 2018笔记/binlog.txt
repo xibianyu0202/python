@@ -1,0 +1,14 @@
+删除早于指定版本的binlog日志
+purge master logs to "binlog 文件名"；
+purge master logs to "plj.000005";
+
+show master status;显示正在使用日志文件信息
+
+删除所有binlog 日志，重建新日志
+reset master;
+
+修改日志记录格式
+show variables like "binlog_format";
+binlog_fromat=mixed
+
+  

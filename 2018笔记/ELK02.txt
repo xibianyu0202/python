@@ -1,0 +1,119 @@
+head 插件
+bigdesk 插件
+kopf 插件 
+#cd /usr/share/elasticsearch/bin/
+#./plugin install ftp://192.168.8.254/elk2018/elasticsearch-head-master.zip
+#./plugin install ftp://192.168.8.254/elk2018/elasticsearch-kopf-master.zip
+#./plugin install ftp://192.168.8.254/elk2018/bigdesk-master.zip
+ 查看安装的插件
+/plugin list
+
+副本数量不能超过集群节点数量
+
+集群状态索引属性查询
+http://192.168.1.11:9200/_cat/
+
+创建索引
+curl -XPOST http://192.168.8.14:9200/tedu -d '
+{
+ "settings":{
+  "index":{
+     "number_of_shards":5
+     "number_of_relicas":1    
+	}
+   }
+}'
+
+增  PUT
+http://192.168.8.11:9200/_cat
+
+# curl 192.168.8.11:9200/_cat/shards?v
+
+?v  详细信息
+?help 帮助
+
+
+金步国 
+# curl -XPUT http://192.168.8.11:9200/tedu/nsd1807/1 -d '
+{
+"职业":"讲师",
+"姓名":"拓拓",
+"性别":"男",
+"爱好":"碰瓷"
+}'
+-d 后面加JSON数据
+
+
+# gzip -d logs.jsonl.gz
+
+
+# curl -XPOST http://192.168.8.11:9200/_bulk --data-binary @shakespeare.json 
+# curl -XPOST http://192.168.8.11:9200/oo/xx/_bulk --data-binary @accounts.json
+# curl -XPOST http://192.168.8.11:9200/_bulk --data-binary @logs.jsonl
+
+
+logstash-codec-*    字符编码插件  用于所有范围
+logstash-filter-*   处理数据 
+
+logstash-input-stdin    从键盘鼠标获取输入的插件
+logstash-output-stdout  将logstash处理结果在屏幕上显示的插件
+logstash-output-kafka    
+
+
+input{
+  stdin{}
+}
+filter{}
+output{
+  stdout{}
+}
+
+
+
+# rsync -av 192.168.8.11:/etc/hosts /etc/hosts  同步目录到本地
+
+
+#  vim /etc/bashrc 
+PATH=${PATH}:/opt/logstash/bin
+
+
+# cat logstash.conf 
+input{
+  file{
+    path => ["/tmp/a.log","/var/tmp/b.log"]
+ }
+}
+
+filter{}
+output{
+  stdout{ codec => "rubydebug" } 
+}
+
+
+# echo A_${RAMDOM} >> /tmp/a.log 
+
+
+https://github.com/logstash-plugins
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

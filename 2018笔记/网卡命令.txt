@@ -1,0 +1,14 @@
+# nmcli connection add con-name eth1 ifname eth1 type ethernet
+
+# which tcpdump 
+/usr/sbin/tcpdump
+
+
+# rpm -qf /sbin/tcpdump
+tcpdump-4.9.0-5.el7.x86_64
+
+
+tcpdump -r /test/tcpdump.cap
+
+
+

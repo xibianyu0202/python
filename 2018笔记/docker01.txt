@@ -1,0 +1,99 @@
+virsh edit
+
+
+Nova - 计算服务
+Neutron-网络服务
+Swift - 对象存储服务
+Cinder-块存储服务
+Glance - 镜像服务
+Keystone - 认证服务
+Horizon - UI服务
+Ceilometer-监控服务
+Heat-集群服务
+Trove-数据库服务
+
+
+# sysctl -p  查看内核路由转发功能
+
+ 
+yum install vim net-tools psmisc  iproute 
+
+docker rm $(docker ps -aq)
+
+appachectl
+
+docker exec -it 2233 /bin/bash
+
+# dpkg -l nginx
+
+/etc/default/nginx
+找  nginx.conf
+
+include /etc/nginx/conf.d/*.conf;   默认首页，引用了此文件 
+
+/usr/share/nginx/html
+
+curl -i 172.17.0.2
+
+vim 
+:vsplit
+
+ 
+docker exec -it 94 /bin/bash
+docker commit c4 myos:latest
+编排基础镜像
+
+docker build -t myos:abc .
+   
+
+yum search openssh
+openssh-server
+yum -y install openssh-server
+id root
+echo '123' | passwd --stdin roots
+cat /usr/lib/systemd/system/sshd.service
+
+ExecStart=/usr/sbin/sshd -D $OPTIONS
+
+EnvironmentFile=/etc/sysconfig/sshd 没有￥OPTIONS的定义，默认没有
+
+sshd-keygen
+报错
+yum provides /etc/rc.d/init.d/functions
+yum install initscripts
+
+cat ssh/Dockerfile
+FROM  myos:latest
+RUN  yum install -y openssh-server initscripts
+RUN echo 'aa' |passwd --stdin root
+RUN sshd-keygen
+ENV EnvironmentFile=/etc/sysconfig/sshd
+CMD ["/usr/sbin/sshd","-D"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

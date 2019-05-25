@@ -1,0 +1,91 @@
+# ps -p 1320  
+自动化监控系统
+Cacti   基于SNMP协议的监控软件，强大的绘图功能
+Nagios  基于Agent监控，强大的状态检查与报警机制
+		插件极多，自己写监控脚本潜入到Nagios非常方便
+
+
+Zabbix  基于多种监控机制，支持分布式监控
+
+Zabbix是一个高度集成的监控解决方案
+可以实现企业级的开源分布式监控
+Zabbix通过C/S模式采集监控数据
+Zabbix通过B/S模式实现web管理ss
+
+
+rpm -ivh libevent-devel-2.0.21-4.el7.x86_64.rpm 
+ ./configure --prefix=/usr/local/zabbix --enable-server 
+--enable-agent --with-mysql --with-net-snmp --with-libcurl
+
+--with-libcurl
+# cp -r  frontends/php/ /usr/local/nginx/html/zabbix
+
+# mysql -uyaya100 -p123456 zabbixdb < data.sql
+# mysql -uyaya100 -p123456 zabbixdb < schema.sql
+# mysql -uyaya100 -p123456 zabbixdb < images.sql
+# mysql -uyaya100 -p123456 zabbixdb
+
+
+# chmod o+w /usr/local/nginx/html/zabbix/conf/
+
+# /etc/init.d/zabbix_server status
+
+
+
+/zabbix-3.4.4/misc/init.d/fedora
+cp core/* /etc/init.d/
+chmod +x /etc/init.d/zabbix_*
+
+基本配置
+1.监控本机
+2.监控远端主机
+3.自定义监控项
+4.监控报警
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

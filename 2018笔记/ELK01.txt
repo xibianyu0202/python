@@ -1,0 +1,91 @@
+
+# echo "hello" > /dev/pts/2
+
+# cat lftp.sh 
+#!/bin/bash
+lftp 192.168.8.254 << EOF
+cd quyi.rpm
+get elk.tar
+EOF
+
+http://118.144.89.240/info.php
+
+curl 文件传输工具
+-A  请求修改agent
+-X  设置请求方法 
+-i  显示返回 头部信息
+-d  加文件上传
+
+
+{{ansible_hostname}}
+
+ ansible elk -m setup -a 'filter="ansible_hostname"'
+
+
+# firefox http://192.168.8.11:9200/_cluster/health?pretty
+
+http请求方法
+ 
+ES 常用
+PUT     增
+DELETE  删
+POST    改   
+GET     查
+
+curl 常用参数介绍
+-A  修改请求
+-X  设置请求方法
+-i  显示返回头信息
+
+# curl -i www.baidu.com
+HTTP/1.1 200 OK
+Accept-Ranges: bytes
+Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform
+Connection: Keep-Alive
+Content-Length: 2381
+Content-Type: text/html
+Date: Sat, 24 Nov 2018 08:10:26 GMT
+Etag: "588604cf-94d"
+Last-Modified: Mon, 23 Jan 2017 13:27:43 GMT
+Pragma: no-cache
+Server: bfe/1.0.8.18
+Set-Cookie: BDORZ=27315; max-age=86400; domain=.baidu.com; path=/
+
+
+# curl http://118.144.89.240/info.php
+# curl -XPOST http://118.144.89.240/info.php
+# curl -XPUT http://118.144.89.240/info.php
+
+curl http://118.144.89.240/info.php -d lftp.sh 
+上传文件
+
+# curl http://118.144.89.240/info.php -A "nsd boy"
+
+# curl -XPOST http://192.168.8.11:9200/tedu/nsd1807/3_update -d '
+{
+"doc":{"姓名":"还是比较正经的"}
+}'
+
+
+# curl -XDELETE http://192.168.8.11:9200/tedu/nsd1807/3
+# curl -XDELETE http://192.168.8.11:9200/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

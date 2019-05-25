@@ -1,0 +1,154 @@
+# createrepo --update .
+
+# cd /etc/ansible/
+#host_key_checking = False
+
+重点
+#inventory      = /etc/ansible/hosts   主机分组列表 去掉＃
+
+
+#host_key_checking = False      关闭首次连接输  yes
+
+
+grep -Pv "^(#|$)" ansible.cfg
+
+主机分组配置文件
+
+/etc/ansible/hosts  
+[web]
+web1
+web2
+
+[mysql]
+db1
+db2
+
+[other]
+cache
+
+
+web[1:50]  批量定义
+
+# ansible mysql --list-hosts
+# ansible all --list-hosts
+
+# ansible cache -m ping 调用检测模块中的ping 模块  不是真的ping，检测ssh是否可用
+# ansible cache -m ping -k 交互
+
+# sysctl -a | grep icmp
+
+# sysctl -w net.ipv4.icmp_echo_ignore_all=1  禁用ping  ＝两端不要空格
+
+# ls /root/.ansible/cp
+ansible_ssh_host
+
+[mysql]
+db1 ansible_ssh_user="root"  ansible_ssh_pass="a"
+db2
+
+
+
+[app:children]  调用其它组
+web
+mysql
+
+
+[app:vars]     
+ansible_ssh_user="root"
+ansible_ssh_pass="a"
+
+动态主机
+Hostdata 其中的"hosts" 部分可以省略，但使用时，必须是"hosts"
+
+[a,b,c]  数组
+k:v   键值 哈希
+[a,k:v,c]
+
+k:[a,b,c]
+k:[a,k1:v1,c]
+
+
+ansible mysql -m ping    #ping 后面无参数
+
+# ansible mysql -m command -a "uptime" -k
+uptime 系统负载
+
+
+key=$(cat id_rsa.pub)
+key=$(< /root/.ssh/id_rsa.pub)
+批量推公钥
+# ansible all -m authorized_key -a "user=root exclusive=true manage_dir=true key='$(< /root/.ssh/id_rsa.pub)'" -k
+
+
+# ansible cache -m shell -a 'ps -ef | grep sshd'
+
+command 不支持 ｜ 管道  
+raw 适用性广，不支持chdir  
+shell 万能
+
+# ansible cache -m shell -a "chdir=/tmp pwd"
+
+# ansible cache -m shell -a "chdir=/tmp pwd"
+
+# ansible web -m script -a 'usera.sh'
+# ansible web -m shell -a "id z3"s
+
+
+#!/bin/bash
+if $(id z3 > /dev/null);then
+  echo user z3 already exists
+else
+ useradd li4 
+ echo aa | passwd --stdin li4
+fi
+
+
+ansible all -m lineinfile -a 'path=/etc/resolv.conf regexp=".*(\.114){3}" line="nameserver 8.8.8.8"'
+
+# ansible all -m copy -a 'src=/etc/resolv.conf dest=/etc/resolv.conf'
+
+# ansible all -m replace -a 'path=/etc/resolv.conf regexp="^(nameserver).*" replace="\1 192.168.8.254"'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

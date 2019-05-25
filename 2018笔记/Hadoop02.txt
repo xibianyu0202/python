@@ -1,0 +1,178 @@
+Zookeiper是一个开源的分布式应用程序协调 服务
+
+Zookeeper是用来保证数据在集群间的事务的一致性
+
+
+Zookeeper应用场景 
+集群分布式锁
+集群统一命名服务
+分布式协调服务
+
+在集群中，多台设备并行工作
+共享锁
+
+互斥锁
+
+Zookeeper角色与特性
+Leader:接受所有Follower的提案请求并统一协调发起提案的投票 ，负责与所有的
+Follower时行内部数据交换 
+Follower:直接为客户端服务并参与提案的投票，同时与Leader进行数据交换
+Observer:直接为客户端服务但并不参与掉案的投票，同时与与Leader进行数据交换
+
+
+如果Leader死亡，重新选举Leader
+如果死亡的机器数量达到一半，则集群挂掉
+
+做Zookeeper集群奇数台比较合适
+
+Observer不计算在投票总设备数量里面
+
+Zookeeper可伸缩扩展性原理与设计
+leader所有写相关操作
+Follower读操作与响应Leader提议
+ 在Observer出现以前，Zookeeper的伸缩性由Follower来实现，我们可以通过添加Follwer的节点数量来保证Zookeeper服务的读性能，但是随着Follower节点数量的增加，Zookeeper服务的写性能受到了影响 
+
+Zookeeper原理与设计
+Zookeeper可伸缩扩展性原理与设计
+客户端提交一个请求
+
+
+
+for i in {1..3};do ssh node$i "mkdir /tmp/zookeeper && echo ${i} > /tmp/zookeeper/myid"; done
+
+
+ssh node3 /usr/local/zookeeper/bin/zkServer.sh start
+
+kafka消息队列
+
+停用Hadoop
+
+启动zookeeper
+# /usr/local/zookeeper/bin/zkServer.sh start
+1011 Jps
+983 QuorumPeerMain
+
+# for i in node{1..3};do
+> ssh $i /usr/local/zookeeper/bin/zkServer.sh start 
+> done
+查看状态
+# /usr/local/zookeeper/bin/zkServer.sh status
+
+四字命令查看设备状态 
+# man socat                                        
+[root@nn01 ~]# socat - TCP4:node2:2181
+ruok
+imok
+
+启动kafka
+
+
+在node1创建主题
+[root@node1 kafka]# ./bin/kafka-topics.sh --create --paartitons 1 replication-factor 1 --zookeeper node3:2181 -topic mymsg
+
+在node2发布消息
+[root@node2 kafka]# ./bin/kafka-console-producer.sh \
+> --broker-list localhost:9092 --topic mymsg
+abdce
+
+在node3消费消息
+[root@node3 kafka]./bin/kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 --topic mymsg
+
+NameNode
+ＮameNode是HDFS的核必配置，HDFS又是Hadoop核心组件，NameNode在Hadoop集群中至关重要
+NameNode宕机，将导致集群不可用，如果NameNode数据丢失将导致整个集群的数据丢失，而NameNode的数据的更新又比较频繁，实现NameNode高可用势在必行
+解决方案
+官方提供了两种解决方案　
+HDFS with NFS
+HDFS with QJM
+
+ZKFailoverController  hadoop的一个配置文件
+
+HA方案对比
+都能实现热备
+都是一个Active NN 和一个Standby NN
+都使用Zookeeper和ZKFC来实现自动失效恢复
+
+失效切换都使用Fencin 配置的方法来Active NN
+
+NFS数据共享变更方案把数据存储在共享存储里，我们还需要考虑NFS的高可用设计
+
+QJM不需要共享存储，但需要让每一个DN都知道两个NN的位置，并把块信息和心跳包发送给Active和Standby这两个NN
+
+使用原因（QJM）
+解决NameNode单点故障问题
+Hadoop给出了HDFS高可用HA方案： HDFS通常由两个 Namenode组成，一个处于Active状态，另一个处于Standby状态。Active Name对外提供服务，比如处理来自客户端的RPC请求，而Ｓtandby Namenode 则不对外提供服务，仅同步Active NameNode的状态，以便能够在它失败时进行切换
+
+会被配置在两台独立的机器上，在任何时候，一个NameNode处于活动状态，而另一个NameNode则处于备份状态
+活动状态的NameNode会响应集群中所有的客户端，备份状态的NameNode只是作为一个副本，保证在必要的时候提供一个快速的转移
+fsimg
+fsedits数据变更日志
+JNS
+
+NameNode高可用架构
+为了让Standby Node与Active Node 保持同步，这两个Node都与一组称为JNS的互相独产的进程保持通信（Journal Nodes）。当Active Node更新了namespace, 它将记录修改日志发磅给JNS的多数派。Standby Node将会从JNS中读取这些edits,并持续关注它们对日志的变更
+Standby Node将日志变更应用在自己的namespace中，当Failover发生时，Standby 将会在提升自己为Active之前，确保能够从JNS中读取所有的edits,即在Failover发生之前Ｓtandy持有的namespace 与Active保持全全同步
+
+
+
+
+NameNode高可用架构续...
+任何时刻，只能有一个Active NameNode,否则会导致集群操作，两个NameNode将会有两种不同的数据状态，可能会导致数据丢失或状态异常，这种情况通常称为"split-brain"（脑裂，三节点通讯阻断，即集群中不同的DataNode看到了不同的Active NameNodes）
+对于JNS而言，任何时候只允许一个NameNode作为writer；在Failover期间，原来的Standby Node将会接管Active的所有职能，并负责向JNS写入日志记录，这种机制阴止了其他NameNode处于Active状态的问题。
+
+
+
+
+
+
+
+
+
+
+
+NameNode数据存放位置
+dfs.namenode.name.dir
+
+/var/hadoop/dfs/name
+file://${hadoop.tmp.dir}/dfs/name
+
+ dfs.datenode.date.dir
+fiel://${hadoop.tmp.dir}/dfs/data
+/var/hadoop/dfs/data
+
+cd /var/hadoop/dfs/name
+
+tree .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

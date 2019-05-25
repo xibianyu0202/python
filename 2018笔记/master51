@@ -1,0 +1,6 @@
+change master to
+master_host="192.168.4.51",
+master_user="repluser",
+master_password="123456",
+master_log_file="master51.000001",
+master_log_pos=154;

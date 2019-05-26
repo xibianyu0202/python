@@ -1,0 +1,8 @@
+---
+- name: elk
+  hosts: se
+  tasks:
+    - copy:
+        src: /root/hosts
+        dest: /etc/hosts
+

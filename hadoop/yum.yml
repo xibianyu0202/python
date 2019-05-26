@@ -1,0 +1,15 @@
+---
+- name: hadoop
+  hosts: ha
+  tasks:
+    - name: install ava-1.8.0-openjdk-devel
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: present
+    - copy:
+        src: /root/book/hosts
+        dest: /etc/hosts
+    - copy:
+        src: /root/book/ssh_config
+        dest: /etc/ssh/ssh_config
+

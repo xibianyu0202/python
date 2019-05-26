@@ -1,0 +1,9 @@
+---
+- name: rsync
+  hosts: ha 
+  tasks:
+    - name: install latest rsync
+      yum:
+        name: rsync
+        state: present
+
